@@ -6,11 +6,15 @@ import uuid
 
 User = get_user_model()
 
+def generate_class_code():
+    return uuid.uuid4().hex[:8]
+
+
 class Class(models.Model):
     """Represents a classroom managed by a teacher."""
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE, related_name="classes")
     name = models.CharField(max_length=100)
-    class_code = models.CharField(max_length=8, unique=True, default=lambda: uuid.uuid4().hex[:8])
+    class_code = models.CharField(max_length=8, unique=True, default=generate_class_code)
     teacher = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

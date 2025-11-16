@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Classes - Create Classroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #00D2D3;
+            --color-secondary: #E0E0E0;
+            --color-background: #1C202B;
+            --color-card: #272B36;
+            --color-shadow: rgba(0, 0, 0, 0.6);
+            --color-input-border: #444B60;
+            --font-stack: 'Roboto', sans-serif;
+            --spacing-lg: 40px;
+            --spacing-md: 25px;
+            --spacing-sm: 15px;
+            --color-batch-bg: #323847;
+            --color-batch-border: #4A5164;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--color-background);
+            color: var(--color-secondary);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1300px;
+            padding: var(--spacing-lg);
+            box-sizing: border-box;
+        }
+
+        .institute-header {
+            background: var(--color-card);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 12px;
+            margin-bottom: var(--spacing-lg);
+            box-shadow: 0 6px 15px var(--color-shadow);
+            border-left: 6px solid var(--color-primary);
+        }
+
+        .institute-label {
+            font-size: 1em;
+            color: #9AA3B9;
+            font-weight: 300;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .institute-name {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--color-secondary);
+        }
+
+        .institute-code {
+            font-size: 0.6em;
+            font-weight: 300;
+            color: var(--color-primary);
+            margin-left: 10px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .class-creator-card, .recent-classes-card {
+            background-color: var(--color-card);
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--color-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .class-creator-card {
+            flex: 2;
+            min-width: 450px;
+        }
+
+        .recent-classes-card {
+            flex: 1;
+            min-width: 350px;
+        }
+
+        .card-title {
+            margin-top: 0;
+            color: var(--color-secondary);
+            border-bottom: 2px solid var(--color-input-border);
+            padding-bottom: 12px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-subtitle {
+            color: #9AA3B9;
+            margin-bottom: var(--spacing-lg);
+            font-size: 0.95em;
+        }
+        
+        #batch-forms-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .class-form-group {
+            background-color: var(--color-batch-bg);
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            border: 1px solid var(--color-batch-border);
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+        }
+
+        .form-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-primary);
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .remove-form-btn {
+            background: none;
+            border: none;
+            color: #E53935;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: color 0.2s;
+        }
+
+        .remove-form-btn:hover {
+            color: #FF5252;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 18px 12px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--color-input-border);
+            color: var(--color-secondary);
+            font-size: 1em;
+            outline: none;
+            transition: border-bottom-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-bottom-color: var(--color-primary);
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 18px;
+            left: 12px;
+            color: #9AA3B9;
+            pointer-events: none;
+            transition: 0.2s ease all;
+            font-size: 1em;
+        }
+
+        .input-group input:focus ~ label,
+        .input-group input:valid ~ label {
+            top: -10px;
+            font-size: 0.75em;
+            color: var(--color-primary);
+        }
+
+        .submit-button {
+            background-color: var(--color-primary);
+            color: var(--color-background);
+            padding: 18px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 700;
+            transition: background-color 0.3s, transform 0.1s;
+            width: 100%;
+            margin-top: var(--spacing-md);
+            letter-spacing: 0.5px;
+        }
+
+        .submit-button:hover { background-color: #00A3A4; }
+        .submit-button:active { transform: scale(0.99); }
+        .submit-button i { margin-right: 8px; }
+        
+        .add-class-button {
+            background-color: var(--color-card);
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+            padding: 12px 20px;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: var(--spacing-sm);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .add-class-button:hover:not(:disabled) {
+            background-color: rgba(0, 210, 211, 0.1);
+        }
+        .add-class-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #4A5164;
+            color: #9AA3B9;
+        }
+
+        #class-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #class-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--color-input-border);
+            font-size: 0.95em;
+        }
+
+        #class-list li:last-child {
+            border-bottom: none;
+        }
+
+        .class-info {
+            color: var(--color-secondary);
+            flex-grow: 1;
+            margin-right: var(--spacing-sm);
+        }
+
+        .class-code-tag {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 700;
+            color: var(--color-background);
+            background-color: #FFB300;
+            flex-shrink: 0;
+        }
+
+        #message-container {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: var(--spacing-lg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .message {
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+
+        .message.fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+
+        .message.success { background-color: #4CAF50; color: white; border: 1px solid #388E3C; }
+        .message.error { background-color: #E53935; color: white; border: 1px solid #C62828; }
+        .message.warning { background-color: #FF9800; color: white; border: 1px solid #E65100; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(10px); } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="institute-header">
+            <span class="institute-label">Creating Classes for:</span>
+            <h1 class="institute-name">{{ institute.name|default:"Global Tech Academy" }}</h1>
+            <span class="institute-label" style="margin:0; margin-top: 5px; color: var(--color-secondary);">Teacher : {{ user.username|default:"Professor " }}</span>
+        </header>
+
+        <div class="content-wrapper">
+            <main class="class-creator-card">
+                <h2 class="card-title">Batch Class Creation</h2>
+                <p class="card-subtitle">Define 1 to 5 class names. Unique codes will be generated automatically.</p>
+
+                <form id="class-batch-form" method="post">
+                    {% csrf_token %}
+                    
+                    <div id="batch-forms-container">
+                        <div class="class-form-group" data-form-index="0">
+                            <div class="form-group-header">
+                                Class 1
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="id_class_0_name" name="class_0_name" required autocomplete="off">
+                                <label for="id_class_0_name">Class Name (e.g., Algebra 101)</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="add-class-btn" class="add-class-button">
+                        <i class="fas fa-plus"></i> Add Another Class (Max 5)
+                    </button>
+
+                    <button type="submit" class="submit-button">
+                        <i class="fas fa-chalkboard-teacher"></i> Create Class(es)
+                    </button>
+                </form>
+            </main>
+
+            <aside class="recent-classes-card">
+                <h3 class="card-title">Classes You Teach</h3>
+                <ul id="class-list">
+                    {% for class in classes_taught %}
+                    <li>
+                        <span class="class-info">{{ class.name }}</span>
+                        <span class="class-code-tag">{{ class.class_code }}</span>
+                    </li>
+                    {% empty %}
+                    <li>
+                        <span class="class-info" style="color:#9AA3B9;">No classes created yet.</span>
+                        <span class="class-code-tag" style="background-color: #444B60;">N/A</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </aside>
+        </div>
+    </div>
+    
+    <div id="message-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('batch-forms-container');
+            const addButton = document.getElementById('add-class-btn');
+            const MAX_FORMS = 5;
+            let formCount = 1;
+
+            function updateFormIndex() {
+                const forms = container.querySelectorAll('.class-form-group');
+                formCount = forms.length;
+
+                forms.forEach((form, index) => {
+                    form.setAttribute('data-form-index', index);
+                    
+                    const header = form.querySelector('.form-group-header');
+                    if (index === 0) {
+                        header.innerHTML = `Class ${index + 1}`;
+                    } else {
+                        header.innerHTML = `Class ${index + 1} <button type="button" class="remove-form-btn"><i class="fas fa-times"></i></button>`;
+                    }
+                    
+                    const input = form.querySelector('input');
+                    const label = form.querySelector('label');
+                    
+                    const newId = `id_class_${index}_name`;
+                    const newName = `class_${index}_name`;
+
+                    input.id = newId;
+                    input.name = newName;
+                    label.setAttribute('for', newId);
+
+                    // Reattach event listener to new remove buttons
+                    const removeBtn = form.querySelector('.remove-form-btn');
+                    if (removeBtn) {
+                        removeBtn.removeEventListener('click', handleRemoveClick); // Avoid duplicates
+                        removeBtn.addEventListener('click', handleRemoveClick);
+                    }
+                });
+                
+                addButton.disabled = formCount >= MAX_FORMS;
+                addButton.innerHTML = formCount >= MAX_FORMS 
+                    ? '<i class="fas fa-ban"></i> Maximum 5 Classes Reached' 
+                    : `<i class="fas fa-plus"></i> Add Another Class (Max 5${formCount > 1 ? `, currently ${formCount}` : ''})`;
+            }
+
+            function handleRemoveClick() {
+                this.closest('.class-form-group').remove();
+                updateFormIndex();
+            }
+
+            function addClassForm() {
+                if (formCount >= MAX_FORMS) return;
+
+                const newFormIndex = formCount;
+                const newForm = document.createElement('div');
+                newForm.className = 'class-form-group';
+                newForm.setAttribute('data-form-index', newFormIndex);
+
+                newForm.innerHTML = `
+                    <div class="form-group-header">
+                        Class ${newFormIndex + 1}
+                        <button type="button" class="remove-form-btn"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="id_class_${newFormIndex}_name" name="class_${newFormIndex}_name" required autocomplete="off">
+                        <label for="id_class_${newFormIndex}_name">Class Name (e.g., Science Lab)</label>
+                    </div>
+                `;
+
+                container.appendChild(newForm);
+                updateFormIndex();
+            }
+
+            addButton.addEventListener('click', addClassForm);
+            updateFormIndex();
+
+            // Auto-hide messages
+            document.querySelectorAll('.message').forEach(msg => {
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

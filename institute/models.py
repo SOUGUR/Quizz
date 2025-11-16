@@ -27,8 +27,9 @@ class Institute(models.Model):
 class Profile(models.Model):
     """Extends User with role and institute."""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
-    role = models.CharField(max_length=10, choices=Role.choices)
+    role = models.CharField(max_length=20, choices=Role.choices)
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE, related_name="profiles")
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} ({self.role})"
