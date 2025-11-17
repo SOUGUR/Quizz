@@ -6,7 +6,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 User = get_user_model()
 
-# Create your models here.
 class Paper(models.Model):
     """Metadata and file for a question paper."""
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE, related_name="papers")
@@ -113,7 +112,7 @@ class Answer(models.Model):
             else:
                 self.score = -q.negative_marks
         elif q.type == "TEXT":
-            # Naive match (in real system, use NLP similarity or keywords)
+            # TODO: NLP similarity or keywords
             if q.correct_answer_text and q.correct_answer_text.strip().lower() == (self.written_answer or "").strip().lower():
                 self.score = q.marks
             else:

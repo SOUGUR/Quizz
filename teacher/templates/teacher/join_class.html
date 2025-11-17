@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Student - Join Class</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #00D2D3;
+            --color-secondary: #E0E0E0;
+            --color-background: #1C202B;
+            --color-card: #272B36;
+            --color-shadow: rgba(0, 0, 0, 0.6);
+            --color-input-border: #444B60;
+            --font-stack: 'Roboto', sans-serif;
+            --spacing-lg: 40px;
+            --spacing-md: 25px;
+            --spacing-sm: 15px;
+            --color-join-highlight: #2196F3; /* Blue for the student join action */
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--color-background);
+            color: var(--color-secondary);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1300px;
+            padding: var(--spacing-lg);
+            box-sizing: border-box;
+        }
+
+        /* --- HEADER STYLES --- */
+        .institute-header {
+            background: var(--color-card);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 12px;
+            margin-bottom: var(--spacing-lg);
+            box-shadow: 0 6px 15px var(--color-shadow);
+            border-left: 6px solid var(--color-join-highlight);
+        }
+
+        .institute-label {
+            font-size: 1em;
+            color: #9AA3B9;
+            font-weight: 300;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .institute-name {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--color-secondary);
+        }
+
+        .institute-code {
+            font-size: 0.6em;
+            font-weight: 300;
+            color: var(--color-join-highlight);
+            margin-left: 10px;
+        }
+
+        /* --- CONTENT & CARD STYLES --- */
+        .content-wrapper {
+            display: flex;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .join-class-card, .enrolled-classes-card {
+            background-color: var(--color-card);
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--color-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .join-class-card:hover, .enrolled-classes-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .join-class-card {
+            flex: 2;
+            min-width: 450px;
+        }
+
+        .enrolled-classes-card {
+            flex: 1;
+            min-width: 350px;
+        }
+
+        .card-title {
+            margin-top: 0;
+            color: var(--color-secondary);
+            border-bottom: 2px solid var(--color-input-border);
+            padding-bottom: 12px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-subtitle {
+            color: #9AA3B9;
+            margin-bottom: var(--spacing-lg);
+            font-size: 0.95em;
+        }
+
+        /* --- FORM STYLES (Floating Labels) --- */
+        .input-group {
+            position: relative;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 18px 12px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--color-input-border);
+            color: var(--color-secondary);
+            font-size: 1.2em;
+            outline: none;
+            transition: border-bottom-color 0.3s;
+            text-align: center;
+        }
+
+        .input-group input:focus {
+            border-bottom-color: var(--color-join-highlight);
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #9AA3B9;
+            pointer-events: none;
+            transition: 0.2s ease all;
+            font-size: 1em;
+        }
+
+        /* Floating label effect (Centered) */
+        .input-group input:focus ~ label,
+        .input-group input:valid ~ label {
+            top: -10px;
+            font-size: 0.75em;
+            color: var(--color-join-highlight);
+            left: 12px;
+            transform: translateX(0);
+        }
+
+        /* --- BUTTON STYLES --- */
+        .submit-button {
+            background-color: var(--color-join-highlight);
+            color: var(--color-background);
+            padding: 18px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 700;
+            transition: background-color 0.3s, transform 0.1s;
+            width: 100%;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-button:hover {
+            background-color: #1A79D2;
+        }
+
+        .submit-button:active {
+            transform: scale(0.99);
+        }
+
+        .submit-button i {
+            margin-right: 8px;
+        }
+
+        /* --- ENROLLED CLASSES LIST STYLES (Sidebar) --- */
+        #class-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #class-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--color-input-border);
+            font-size: 0.95em;
+        }
+
+        #class-list li:last-child {
+            border-bottom: none;
+        }
+
+        .class-name-info {
+            color: var(--color-secondary);
+            flex-grow: 1;
+            margin-right: var(--spacing-sm);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+        }
+        
+        .class-teacher {
+            font-size: 0.8em;
+            color: #9AA3B9;
+            flex-shrink: 0;
+        }
+        
+        /* --- NEW STATUS TAGS --- */
+        .pending-tag {
+            background-color: #FF9800; /* Orange */
+            color: var(--color-background);
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 10px; /* Increased margin for better separation */
+            flex-shrink: 0;
+        }
+        
+        .approved-tag {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+
+        /* --- TOAST MESSAGE STYLES --- */
+        #message-container {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: var(--spacing-lg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 15px 20px;
+            margin: 0;
+            border-radius: 8px;
+            font-weight: 500;
+            opacity: 1;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            transform: translateX(0);
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .message.fade-out {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .message.success {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #388E3C;
+        }
+
+        .message.error {
+            background-color: #E53935;
+            color: white;
+            border: 1px solid #C62828;
+        }
+        .message.info {
+            background-color: #1E88E5;
+            color: white;
+            border: 1px solid #1565C0;
+        }
+        .message.warning {
+            background-color: #FFB300;
+            color: #333;
+            border: 1px solid #FF8F00;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="institute-header">
+            <span class="institute-label">Welcome, Student:</span>
+            <h1 class="institute-name">{{ user.username|default:"Jane Doe" }} <span class="institute-code">({{ institute.code|default:"GTA-001" }})</span></h1>
+        </header>
+
+        <div class="content-wrapper">
+            <main class="join-class-card">
+                <h2 class="card-title">Request to Join a Class</h2>
+                <p class="card-subtitle">Enter the 8-character class code from your teacher. Your request will be sent for approval.</p>
+
+                <form id="join-class-form" method="post">
+                    {% csrf_token %}
+                    
+                    <div class="input-group">
+                        <input type="text" id="class_code" name="class_code" required autocomplete="off" maxlength="8">
+                        <label for="class_code">Enter Class Code</label>
+                    </div>
+
+                    <button type="submit" class="submit-button">
+                        <i class="fas fa-paper-plane"></i> Send Enrollment Request
+                    </button>
+                </form>
+            </main>
+
+            <aside class="enrolled-classes-card">
+                <h3 class="card-title">My Class Requests</h3>
+                <ul id="class-list">
+                    {% for enrollment in student_enrollments %}
+                    <li>
+                        <span class="class-name-info">
+                            {{ enrollment.class_in.name }}
+                            {% if enrollment.approved %}
+                                <span class="approved-tag">Enrolled</span>
+                            {% else %}
+                                <span class="pending-tag">Pending</span>
+                            {% endif %}
+                        </span>
+                        <span class="class-teacher">by {{ enrollment.class_in.teacher.username }}</span>
+                    </li>
+                    {% empty %}
+                    <li>
+                        <span class="class-name-info" style="color:#9AA3B9;">No class requests yet.</span>
+                        <span class="class-teacher">---</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </aside>
+        </div>
+    </div>
+    
+    <div id="message-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide messages
+            const messageContainer = document.getElementById('message-container');
+            const messages = messageContainer ? messageContainer.querySelectorAll('.message') : [];
+            
+            messages.forEach(message => {
+                setTimeout(() => {
+                    message.classList.add('fade-out');
+                    setTimeout(() => {
+                        message.remove();
+                    }, 500); 
+                }, 5000); 
+            });
+
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Teacher - Enrollment Requests</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* --- CSS VARIABLES & BASE STYLES --- */
+        :root {
+            --color-primary: #00D2D3; /* Main highlight color */
+            --color-secondary: #E0E0E0; /* Text color */
+            --color-background: #1C202B; /* Dark background */
+            --color-card: #272B36; /* Card background */
+            --color-shadow: rgba(0, 0, 0, 0.6);
+            --color-input-border: #444B60;
+            --font-stack: 'Roboto', sans-serif;
+            --spacing-lg: 40px;
+            --spacing-md: 25px;
+            --spacing-sm: 15px;
+            --color-teacher-highlight: #4CAF50; /* Green for Teacher context/Action */
+            --color-pending: #FF9800; /* Orange */
+            --color-approved: #2196F3; /* Blue/Enrollment success */
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--color-background);
+            color: var(--color-secondary);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 1300px;
+            padding: var(--spacing-lg);
+            box-sizing: border-box;
+        }
+
+        /* --- HEADER STYLES --- */
+        .institute-header {
+            background: var(--color-card);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 12px;
+            margin-bottom: var(--spacing-lg);
+            box-shadow: 0 6px 15px var(--color-shadow);
+            border-left: 6px solid var(--color-teacher-highlight);
+        }
+
+        .institute-label {
+            font-size: 1em;
+            color: #9AA3B9;
+            font-weight: 300;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .institute-name {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--color-secondary);
+        }
+        
+        /* --- CONTENT & CARD STYLES --- */
+        .content-wrapper {
+            display: flex;
+            gap: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .requests-card, .summary-card {
+            background-color: var(--color-card);
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--color-shadow);
+            transition: transform 0.3s ease;
+        }
+        
+        .requests-card:hover, .summary-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .requests-card {
+            flex: 3; /* Main request area is wider */
+            min-width: 600px;
+        }
+
+        .summary-card {
+            flex: 1;
+            min-width: 350px;
+        }
+
+        .card-title {
+            margin-top: 0;
+            color: var(--color-secondary);
+            border-bottom: 2px solid var(--color-input-border);
+            padding-bottom: 12px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-subtitle {
+            color: #9AA3B9;
+            margin-bottom: var(--spacing-lg);
+            font-size: 0.95em;
+        }
+        
+        /* --- REQUEST LIST STYLES --- */
+        .request-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .request-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px dashed var(--color-input-border);
+            font-size: 0.95em;
+        }
+        
+        .request-item:last-child {
+            border-bottom: none;
+        }
+
+        .request-details {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            margin-right: var(--spacing-sm);
+        }
+        
+        .student-name {
+            font-weight: 700;
+            color: var(--color-secondary);
+        }
+        
+        .class-name-time {
+            font-size: 0.8em;
+            color: #9AA3B9;
+            margin-top: 4px;
+        }
+        
+        .class-name-time strong {
+            color: var(--color-primary); /* Highlight class name */
+        }
+
+        /* --- STATUS AND ACTION STYLES --- */
+        .status-tag {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 700;
+            text-transform: uppercase;
+            flex-shrink: 0;
+            min-width: 80px;
+            text-align: center;
+            margin-right: var(--spacing-md);
+        }
+        
+        .status-tag.pending {
+            background-color: var(--color-pending);
+            color: var(--color-background);
+        }
+        
+        .status-tag.approved {
+            background-color: var(--color-approved);
+            color: white;
+        }
+
+        .action-form {
+            flex-shrink: 0;
+        }
+
+        .approve-button {
+            background-color: var(--color-teacher-highlight);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.3s;
+        }
+
+        .approve-button:hover {
+            background-color: #388E3C;
+        }
+        
+        .approve-button:disabled {
+            background-color: #444B60;
+            cursor: not-allowed;
+        }
+
+        /* --- SUMMARY (Sidebar) STYLES --- */
+        .summary-list {
+            list-style: none;
+            padding: 0;
+        }
+        .summary-list li {
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--color-input-border);
+            display: flex;
+            justify-content: space-between;
+        }
+        .summary-list li:last-child {
+            border-bottom: none;
+        }
+        .summary-label {
+            color: var(--color-secondary);
+        }
+        .summary-count {
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        /* --- TOAST MESSAGE STYLES --- */
+        #message-container {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            left: var(--spacing-lg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 15px 20px;
+            margin: 0;
+            border-radius: 8px;
+            font-weight: 500;
+            opacity: 1;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            transform: translateX(0);
+            min-width: 300px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .message.fade-out {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        .message.success {
+            background-color: var(--color-teacher-highlight);
+            color: white;
+            border: 1px solid #388E3C;
+        }
+
+        .message.error {
+            background-color: #E53935;
+            color: white;
+            border: 1px solid #C62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="institute-header">
+            <span class="institute-label">Managing Enrollments for:</span>
+            <h1 class="institute-name">{{ user.username|default:"Professor Smith" }}</h1>
+        </header>
+
+        <div class="content-wrapper">
+            <main class="requests-card">
+                <h2 class="card-title">Enrollment Requests</h2>
+                <p class="card-subtitle">Review and approve students requesting to join your classes.</p>
+
+                <ul class="request-list">
+                    {% for enrollment in all_enrollment_requests %}
+                    <li class="request-item">
+                        <div class="request-details">
+                            <span class="student-name">
+                                <i class="fas fa-user-graduate"></i> {{ enrollment.student.username }}
+                            </span>
+                            <span class="class-name-time">
+                                Class: <strong>{{ enrollment.class_in.name }}</strong> 
+                                (Code: {{ enrollment.class_in.class_code }})
+                                | Requested: {{ enrollment.joined_at|date:"M d, H:i" }}
+                            </span>
+                        </div>
+
+                        {% if enrollment.approved %}
+                            <span class="status-tag approved">Approved</span>
+                            <button type="button" class="approve-button" disabled>
+                                <i class="fas fa-check"></i> Enrolled
+                            </button>
+                        {% else %}
+                            <span class="status-tag pending">Pending</span>
+                            <form method="post" class="action-form" style="margin: 0;">
+                                {% csrf_token %}
+                                <input type="hidden" name="enrollment_id" value="{{ enrollment.id }}">
+                                <button type="submit" name="action" value="approve" class="approve-button">
+                                    <i class="fas fa-user-plus"></i> Approve
+                                </button>
+                            </form>
+                        {% endif %}
+                    </li>
+                    {% empty %}
+                    <li style="color: #9AA3B9; padding: 20px 0; text-align: center;">
+                        No enrollment requests found.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </main>
+
+            <aside class="summary-card">
+                <h3 class="card-title">Enrollment Summary</h3>
+                <ul class="summary-list">
+                    <li>
+                        <span class="summary-label">Total Classes Taught:</span>
+                        <span class="summary-count">{{ total_classes|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="summary-label">Total Students Enrolled:</span>
+                        <span class="summary-count" style="color: var(--color-approved);">{{ total_approved_students|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="summary-label">Pending Requests:</span>
+                        <span class="summary-count" style="color: var(--color-pending);">{{ total_pending_requests|default:0 }}</span>
+                    </li>
+                    <li>
+                        <span class="summary-label">Approved Today:</span>
+                        <span class="summary-count">{{ approved_today|default:0 }}</span>
+                    </li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+    
+    <div id="message-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.message').forEach(msg => {
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 500);
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

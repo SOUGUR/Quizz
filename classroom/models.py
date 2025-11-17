@@ -39,6 +39,7 @@ class Enrollment(models.Model):
     )
     class_in = models.ForeignKey(Class, on_delete=models.CASCADE, related_name="enrollments")
     joined_at = models.DateTimeField(auto_now_add=True)
+    approved = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ("student", "class_in")
