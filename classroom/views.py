@@ -6,6 +6,7 @@ from institute.models import Profile
 from django.db import transaction
 
 
+@login_required
 def create_classroom(request):
     try:
         profile = request.user.profile

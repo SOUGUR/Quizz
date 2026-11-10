@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Log in - Nexus Platform{% endblock %}
+
+{% block content %}
+<div class="content-block">
+    <h1 class="content-title">Log in</h1>
+
+    <div class="card-3d" style="max-width: 420px;">
+        {% if form.errors %}
+            <p class="message error" style="position: static;">Your username and password didn't match. Please try again.</p>
+        {% endif %}
+        {% if next and user.is_authenticated %}
+            <p>Your account doesn't have access to that page. Log in with an account that does.</p>
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <p>
+                <label for="id_username">Username</label><br>
+                <input type="text" name="username" id="id_username" autocomplete="username" required autofocus
+                       value="{{ form.username.value|default_if_none:'' }}" style="width: 100%; padding: 8px;">
+            </p>
+            <p>
+                <label for="id_password">Password</label><br>
+                <input type="password" name="password" id="id_password" autocomplete="current-password" required
+                       style="width: 100%; padding: 8px;">
+            </p>
+            <input type="hidden" name="next" value="{{ next }}">
+            <button type="submit" style="padding: 8px 20px; cursor: pointer;">Log in</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

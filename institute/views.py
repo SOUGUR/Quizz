@@ -67,9 +67,11 @@ def create_profile_view(request):
         recent_profiles = Profile.objects.filter(institute=user_institute).order_by('-created_at')[:10]
 
     except AttributeError:
+        # Logged-in user without a Profile (e.g. a fresh superuser).
         user_institute = None
         institute_code = None
-        
+        recent_profiles = []
+
     
     context = {
         'institute': user_institute,

@@ -22,6 +22,8 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Login/logout/password views (templates in templates/registration/).
+    path('accounts/', include('django.contrib.auth.urls')),
     path('institute/', include('institute.urls')),
     path('classroom/', include('classroom.urls')),
     path('teacher/', include('teacher.urls')),

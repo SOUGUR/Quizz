@@ -414,6 +414,22 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    {% if user.is_authenticated %}
+                        {# Logout must be a POST in Django 5+ (a GET link no longer works). #}
+                        <form method="post" action="{% url 'logout' %}" style="display:inline">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link" style="background:none;border:none;cursor:pointer;font:inherit">
+                                <i class="fas fa-sign-out-alt"></i> Log out ({{ user.username }})
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-link">
+                            <i class="fas fa-sign-in-alt"></i> Log in
+                        </a>
+                    {% endif %}
+                </li>
+
                 <!-- Admin Dropdown -->
                 {% if user.profile.role == 'ADMINISTRATOR' %}
                 <li class="nav-item">

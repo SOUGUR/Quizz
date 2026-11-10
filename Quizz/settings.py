@@ -140,6 +140,11 @@ TIME_ZONE = os.getenv("TIME_ZONE", "UTC")
 USE_I18N = True
 USE_TZ = True
 
+# Authentication: pages behind @login_required redirect here.
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"
+
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

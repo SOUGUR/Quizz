@@ -6,6 +6,7 @@ from institute.models import Profile, Role
 from django.utils import timezone
 
 
+@login_required
 def join_class(request):
     """
     Student submits a class code to request enrollment.
@@ -57,6 +58,7 @@ def join_class(request):
     })
 
 
+@login_required
 def manage_enrollment_requests(request):
     """
     Teacher view to see and approve student enrollment requests for their classes.
