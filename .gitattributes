@@ -1,0 +1,4 @@
+# Shell scripts run inside Linux containers: they must keep LF line endings,
+# otherwise the container fails with "/bin/sh^M: not found".
+*.sh text eol=lf
+Dockerfile text eol=lf

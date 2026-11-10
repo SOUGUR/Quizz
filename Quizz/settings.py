@@ -88,6 +88,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Serves collected static files (admin CSS etc.) under gunicorn/Docker,
+    # where Django's runserver static handling is not available.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -121,7 +124,8 @@ WSGI_APPLICATION = "Quizz.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        # Overridable so Docker can keep the DB in a volume (/app/data).
+        "NAME": Path(os.getenv("SQLITE_PATH", BASE_DIR / "db.sqlite3")),
         # Background processing writes while the web thread reads; give SQLite
         # time to wait for the write lock instead of failing immediately.
         "OPTIONS": {"timeout": 20},

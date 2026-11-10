@@ -102,6 +102,63 @@ python manage.py runserver
 Open http://127.0.0.1:8000/mcq/ (or "MCQ Extractor" in the top bar) → **Upload Paper** → the paper is processed in
 the background; its page shows live progress and then the questions.
 
+## Run with Docker
+
+Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+(Windows/macOS) or Docker Engine + Compose v2.24+ (Linux).
+
+```bash
+copy .env.example .env      # Windows (cp on Linux/macOS); set SECRET_KEY, DEBUG=True for local use
+docker compose up --build   # first build downloads ~1.5 GB (OCR engine); later builds are cached
+```
+
+Open http://localhost:8000/. Migrations run automatically on start.
+
+**LLM (Ollama).** By default the container talks to the Ollama installed on
+your computer, so the model is not held in memory twice:
+
+```bash
+ollama pull qwen2.5:3b      # on the host, once
+```
+
+No Ollama on the host? Run it in Docker instead (needs ~3 GB RAM extra):
+
+```bash
+# .env:  DOCKER_OLLAMA_BASE_URL=http://ollama:11434
+docker compose --profile ollama up --build -d
+docker compose exec ollama ollama pull qwen2.5:3b
+```
+
+Or skip local inference with `LLM_PROVIDER=gemini` + `GEMINI_API_KEY` in `.env`.
+
+**Background jobs.** The default `TASK_BACKEND=thread` needs nothing extra.
+To use Celery + Redis (survives restarts), set `TASK_BACKEND=celery` in
+`.env` and start with `docker compose --profile celery up --build`.
+
+**Useful commands**
+
+```bash
+docker compose logs -f web                                  # app logs
+docker compose exec web python manage.py createsuperuser    # admin user
+docker compose exec web python manage.py test mcq_app       # run tests in the container
+docker compose cp db.sqlite3 web:/app/data/db.sqlite3       # copy your local DB in (then restart)
+docker compose down                                         # stop (data is kept)
+docker compose down -v                                      # stop AND delete DB, uploads, models
+```
+
+Data lives in named volumes: `db-data` (SQLite), `media` (uploads),
+`paddle-models` (OCR models, downloaded on first OCR), `logs`.
+
+**Troubleshooting**
+
+| Problem | Fix |
+| --- | --- |
+| "Cannot reach Ollama at http://host.docker.internal:11434" | Make sure Ollama is running on the host. On Windows, if it still fails, set the user environment variable `OLLAMA_HOST=0.0.0.0`, restart Ollama, and allow it through the firewall. |
+| `/bin/sh^M: not found` | `entrypoint.sh` got Windows line endings; `.gitattributes` prevents this - re-clone or run `git add --renormalize .` |
+| Build is slow / large | `docker compose build --build-arg INSTALL_LOCAL_OCR=false` drops PaddleOCR (~1 GB); then use `OCR_PROVIDER=nvidia`. Digital PDFs never need OCR. |
+| Container killed / out of memory | Give Docker Desktop more memory (Settings → Resources), or use Gemini instead of a local model. |
+| `CSRF verification failed` on another host/port | Add it to `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` in `.env`. |
+
 ### Command line
 
 ```bash

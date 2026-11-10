@@ -1,0 +1,66 @@
+# Local development stack.
+#
+#   docker compose up --build                     # web app on http://localhost:8000
+#   docker compose --profile ollama up --build    # + Ollama inside Docker
+#   docker compose --profile celery up --build    # + Redis + Celery worker
+#
+# By default the app uses the Ollama already running on your computer
+# (host.docker.internal), so the model is not loaded into memory twice.
+
+x-app: &app
+  build: .
+  image: quizz-web
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    # Container paths (volumes below). These override values from .env.
+    SQLITE_PATH: /app/data/db.sqlite3
+    OLLAMA_BASE_URL: ${DOCKER_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+    CELERY_BROKER_URL: redis://redis:6379/0
+    CELERY_RESULT_BACKEND: redis://redis:6379/0
+  extra_hosts:
+    - "host.docker.internal:host-gateway"  # makes the host reachable on Linux too
+  volumes:
+    - db-data:/app/data
+    - media:/app/media
+    - logs:/app/logs
+    - paddle-models:/home/app/.paddlex     # OCR models download once
+  restart: unless-stopped
+
+services:
+  web:
+    <<: *app
+    ports:
+      - "8000:8000"
+
+  worker:
+    <<: *app
+    profiles: ["celery"]
+    command: ["celery", "-A", "Quizz", "worker", "-l", "info", "--concurrency", "1"]
+    environment:
+      SQLITE_PATH: /app/data/db.sqlite3
+      OLLAMA_BASE_URL: ${DOCKER_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      RUN_MIGRATIONS: "0"
+    depends_on: [redis, web]
+
+  redis:
+    image: redis:7.2-alpine
+    profiles: ["celery"]
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:0.6.8
+    profiles: ["ollama"]
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  media:
+  logs:
+  paddle-models:
+  ollama-models:

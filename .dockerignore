@@ -1,0 +1,22 @@
+# Never bake secrets or local data into the image; compose passes .env at runtime.
+.env
+.env.*
+!.env.example
+*.backup
+*.sqlite3
+media/
+logs/
+staticfiles/
+
+.git/
+.gitignore
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+myenv/
+.vscode/
+.idea/
+Dockerfile
+docker-compose.yml
+.dockerignore
