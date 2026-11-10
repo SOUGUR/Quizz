@@ -9,9 +9,17 @@ env/
 myenv/
 .venv/
 
-# Ignore Django migration files
-*/migrations/
-!*/migrations/__init__.py
+# Secrets: never commit real keys. .env.example documents every variable.
+.env
+.env.*
+!.env.example
+
+# Local backups and runtime output
+*.backup
+logs/
+
+# NOTE: migrations ARE committed. They define the database schema; without
+# them a fresh clone cannot run `migrate` and teammates' schemas drift apart.
 
 # Ignore database files (SQLite)
 *.sqlite3

@@ -6,6 +6,8 @@
     <title>{% block title %}Nexus Platform{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {# Page-specific CSS. Placed BEFORE the platform styles below so the shared nav/toast styles win any clash. #}
+    {% block extra_head %}{% endblock %}
     <style>
         :root {
             --color-primary: #00D2D3;
@@ -403,6 +405,12 @@
                 <li class="nav-item">
                     <a href="{% url 'create_classroom' %}" class="nav-link">
                         <i class="fas fa-home"></i> Dashboard
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{% url 'paper_list' %}" class="nav-link">
+                        <i class="fas fa-file-alt"></i> MCQ Extractor
                     </a>
                 </li>
 

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Question Papers - MCQ Extractor{% endblock %}
+
+{% block extra_head %}{% include "mcq_app/_bootstrap.html" %}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Uploaded Question Papers</h2>
+    <a href="{% url 'upload_paper' %}" class="btn btn-primary">Upload New Paper</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Title</th>
+                    <th>Uploaded At</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for paper in papers %}
+                <tr>
+                    <td>{{ paper.title }}</td>
+                    <td>{{ paper.created_at|date:"M d, Y H:i" }}</td>
+                    <td>{% include "mcq_app/_status_badge.html" with count=paper.question_count %}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'paper_detail' paper.id %}" class="btn btn-outline-info">View</a>
+                            {% if paper.status == "pending" or paper.status == "failed" %}
+                                <form method="post" action="{% url 'process_paper' paper.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-success btn-sm rounded-0 rounded-end">
+                                        {% if paper.status == "failed" %}Retry{% else %}Process OCR + LLM{% endif %}
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center py-4">No papers uploaded yet. <a href="{% url 'upload_paper' %}">Upload one now</a>.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

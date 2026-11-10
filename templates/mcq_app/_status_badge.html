@@ -1,0 +1,4 @@
+{% if paper.status == "completed" %}<span class="badge bg-success">Completed{% if count is not None %} ({{ count }} MCQs){% endif %}</span>
+{% elif paper.status == "processing" %}<span class="badge bg-primary"><span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>Processing</span>
+{% elif paper.status == "failed" %}<span class="badge bg-danger">Failed</span>
+{% else %}<span class="badge bg-warning text-dark">Pending</span>{% endif %}

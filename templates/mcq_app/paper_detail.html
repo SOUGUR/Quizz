@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ paper.title }} - MCQ Extractor{% endblock %}
+
+{% block extra_head %}{% include "mcq_app/_bootstrap.html" %}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ paper.title }}</h2>
+    <a href="{% url 'paper_list' %}" class="btn btn-outline-secondary">Back to List</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Paper Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Status:</strong> <span id="status-badge">{% include "mcq_app/_status_badge.html" with count=None %}</span></p>
+                <p><strong>Uploaded At:</strong> {{ paper.created_at|date:"M d, Y H:i" }}</p>
+                {% if paper.page_count %}<p><strong>Pages:</strong> {{ paper.page_count }}</p>{% endif %}
+                <p><strong>Total MCQs:</strong> {{ question_count }}</p>
+                {% if paper.llm_provider %}<p><strong>Model:</strong> <code>{{ paper.llm_provider }}</code></p>{% endif %}
+                <p><strong>Original File:</strong> <a href="{{ paper.upload_file.url }}" target="_blank" rel="noopener" class="text-decoration-none">View Original</a></p>
+
+                {% if paper.status == "processing" %}
+                    <div class="alert alert-primary mb-0" id="progress-box">
+                        <div class="d-flex align-items-center">
+                            <div class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>
+                            <span id="progress-text">{{ paper.progress_message|default:"Working..." }}</span>
+                        </div>
+                        <small class="d-block mt-2 text-muted">You can leave this page; processing continues in the background.</small>
+                    </div>
+                {% else %}
+                    {% if paper.status == "failed" %}
+                        <div class="alert alert-danger">{{ paper.error_message|default:"Processing failed." }}</div>
+                    {% elif paper.status == "completed" and paper.progress_message %}
+                        <div class="alert alert-success">{{ paper.progress_message }}</div>
+                    {% endif %}
+
+                    <form method="post" action="{% url 'process_paper' paper.id %}">
+                        {% csrf_token %}
+                        {% if paper.status == "pending" %}
+                            <button type="submit" class="btn btn-success w-100">Process Now</button>
+                        {% else %}
+                            <button type="submit" class="btn btn-outline-success w-100 mb-2">
+                                {% if paper.status == "failed" %}Retry{% else %}Re-process{% endif %} (OCR + LLM)
+                            </button>
+                            {% if paper.ocr_text %}
+                                <button type="submit" name="reuse_ocr" value="1" class="btn btn-outline-secondary w-100">
+                                    Re-run LLM only (reuse OCR text)
+                                </button>
+                            {% endif %}
+                        {% endif %}
+                    </form>
+                    {% if paper.status != "pending" %}
+                        <small class="text-muted d-block mt-2">Re-processing replaces the existing questions; it never duplicates them.</small>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        {% if questions %}
+            <h4 class="mb-3">Extracted Questions</h4>
+            {% for question in questions %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">{{ question.question_number|default:forloop.counter }}</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text fs-5 mb-4" style="white-space: pre-wrap;">{{ question.question_text }}</p>
+
+                        <div class="row g-3">
+                            {% for option in question.options.all %}
+                                <div class="col-md-6">
+                                    <div class="p-3 border rounded bg-white h-100">
+                                        <strong>({{ option.option_label }})</strong> {{ option.text }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-light border text-center py-5 shadow-sm">
+                <h4 class="text-muted">No Questions Extracted</h4>
+                <p class="text-muted">Process the paper to see extracted MCQs here.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if paper.status == "processing" %}
+<script>
+  // Poll the status endpoint; reload once processing finishes.
+  (function poll() {
+    fetch("{% url 'paper_status' paper.id %}", {headers: {"Accept": "application/json"}})
+      .then(r => r.json())
+      .then(data => {
+        if (data.status !== "processing") { window.location.reload(); return; }
+        const el = document.getElementById("progress-text");
+        if (el && data.progress) el.textContent = data.progress;
+        setTimeout(poll, 3000);
+      })
+      .catch(() => setTimeout(poll, 6000));
+  })();
+</script>
+{% endif %}
+{% endblock %}

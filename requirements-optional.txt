@@ -1,0 +1,5 @@
+# Only needed for TASK_BACKEND=celery
+celery>=5.4
+redis>=5.0
+# Only needed for PDF_RENDERER=poppler (also requires poppler binaries)
+pdf2image>=1.17
